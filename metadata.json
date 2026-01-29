@@ -1,0 +1,5 @@
+{
+  "name": "Interactive Roadmap Planner",
+  "description": "A dynamic and interactive roadmap planning tool. Users can drag and drop tasks, add new items via a context menu, and update task details like status, time, and assignees.",
+  "requestFramePermissions": []
+}

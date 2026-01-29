@@ -1,0 +1,83 @@
+
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interactive Roadmap Planner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+    <script>
+    tailwind.config = {
+        darkMode: "class",
+        theme: {
+            extend: {
+                colors: {
+                    primary: "#2b6cee",
+                    "background-light": "#f6f6f8",
+                    "background-dark": "#0f1522",
+                    "pillar-salmon": "#f87171",
+                    "pillar-gold": "#fbbf24",
+                    "pillar-emerald": "#34d399",
+                    "pillar-azure": "#60a5fa"
+                },
+                fontFamily: {
+                    sans: ['Inter', 'sans-serif'],
+                },
+                borderRadius: {
+                    DEFAULT: "0.25rem",
+                    lg: "0.5rem",
+                    xl: "0.75rem",
+                    full: "9999px"
+                }
+            }
+        }
+    }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        @media print {
+          body, html {
+            background: #0f1522 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+          .print-hidden {
+            display: none !important;
+          }
+          header {
+            position: static !important;
+            border: none !important;
+            background: #0f1522 !important;
+            backdrop-filter: none !important;
+            padding-bottom: 1.5rem !important;
+          }
+           main {
+            padding: 0 !important;
+            margin: 0 !important;
+            max-width: 100% !important;
+          }
+          .border-slate-800 {
+            border-color: #334155 !important;
+          }
+          .dark .dark\:bg-background-dark {
+              background-color: #0f1522 !important;
+          }
+        }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "react": "https://esm.sh/react@^19.2.4"
+  }
+}
+</script>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-200 min-h-screen">
+<div id="root"></div>
+</body>
+</html>
