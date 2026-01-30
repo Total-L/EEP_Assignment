@@ -12,6 +12,7 @@ const App: React.FC = () => {
     const [contextMenu, setContextMenu] = useState<ContextMenuState>({ visible: false, x: 0, y: 0, type: 'cell', data: {} });
     const [modal, setModal] = useState<ModalState>({ visible: false, type: 'add', data: {} });
     const [viewMode, setViewMode] = useState<'week' | 'month' | 'quarter'>('week');
+    const [isDarkMode, setIsDarkMode] = useState(true);
     
     const closeContextMenu = useCallback(() => {
         setContextMenu(prev => ({ ...prev, visible: false }));
@@ -24,6 +25,10 @@ const App: React.FC = () => {
             window.removeEventListener('click', handleClick);
         };
     }, [closeContextMenu]);
+
+    useEffect(() => {
+        document.documentElement.classList.toggle('dark', isDarkMode);
+    }, [isDarkMode]);
 
     const handleContextMenu = (e: React.MouseEvent, type: 'cell' | 'item', data: any) => {
         e.preventDefault();
@@ -111,8 +116,8 @@ const App: React.FC = () => {
     const currentDates = getDatesForViewMode();
 
     return (
-        <div className="dark">
-            <Header users={USERS} viewMode={viewMode} setViewMode={setViewMode} onExport={handleExport} />
+        <div>
+            <Header users={USERS} viewMode={viewMode} setViewMode={setViewMode} onExport={handleExport} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
             <main className="max-w-[1600px] mx-auto p-6">
                 <RoadmapGrid
                     pillars={PILLARS}
@@ -124,17 +129,17 @@ const App: React.FC = () => {
                 />
             </main>
             <div className="fixed bottom-6 right-6 flex items-center gap-6 print-hidden">
-                <div className="bg-slate-900/60 backdrop-blur-xl p-4 rounded-2xl shadow-2xl z-50 flex flex-col gap-2 border border-white/5 min-w-[220px]">
-                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-1">Roadmap Status</span>
+                <div className="bg-white/90 dark:bg-slate-900/60 backdrop-blur-xl p-4 rounded-2xl shadow-2xl z-50 flex flex-col gap-2 border border-slate-200/50 dark:border-white/5 min-w-[220px]">
+                    <span className="text-[10px] font-bold text-slate-500 dark:text-slate-500 uppercase tracking-widest px-1">Roadmap Status</span>
                     <div className="flex items-center justify-between px-1">
                         <div className="flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-pillar-emerald"></span><span className="text-[11px] font-bold text-slate-300">In Progress</span>
+                            <span className="w-2 h-2 rounded-full bg-pillar-emerald"></span><span className="text-[11px] font-bold text-slate-700 dark:text-slate-300">In Progress</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-slate-500"></span><span className="text-[11px] font-bold text-slate-300">Todo</span>
+                            <span className="w-2 h-2 rounded-full bg-slate-500"></span><span className="text-[11px] font-bold text-slate-700 dark:text-slate-300">Todo</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-blue-500"></span><span className="text-[11px] font-bold text-slate-300">Delayed</span>
+                            <span className="w-2 h-2 rounded-full bg-blue-500"></span><span className="text-[11px] font-bold text-slate-700 dark:text-slate-300">Delayed</span>
                         </div>
                     </div>
                 </div>

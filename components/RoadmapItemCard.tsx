@@ -29,14 +29,14 @@ const AssigneeAvatars: React.FC<{ assignees: User[] }> = ({ assignees }) => {
     return (
         <div className="flex -space-x-1">
             {assignees.map(user => (
-                <img key={user.id} alt={user.name} className="w-5 h-5 rounded-full ring-2 ring-background-dark object-cover" src={user.avatarUrl} />
+                <img key={user.id} alt={user.name} className="w-5 h-5 rounded-full ring-2 ring-white dark:ring-background-dark object-cover" src={user.avatarUrl} />
             ))}
         </div>
     );
 };
 
 const ProgressBar: React.FC<{ progress: number; color: string; }> = ({ progress, color }) => (
-    <div className="w-16 h-1 bg-slate-800/50 rounded-full overflow-hidden">
+    <div className="w-16 h-1 bg-slate-200/50 dark:bg-slate-800/50 rounded-full overflow-hidden">
         <div className={`${color} h-full`} style={{ width: `${progress}%` }}></div>
     </div>
 );
@@ -50,20 +50,20 @@ const RoadmapItemCard: React.FC<RoadmapItemCardProps> = ({ item, pillarColor, on
             draggable
             onDragStart={(e) => onDragStart(e, item.id)}
             onContextMenu={(e) => onContextMenu(e, 'item', { item })}
-            className={`p-3 rounded-xl border border-slate-800 bg-slate-900 ${hoverBorderColor} transition-all cursor-pointer w-full text-left`}
+            className={`p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 ${hoverBorderColor} transition-all cursor-pointer w-full text-left`}
         >
-            <p className="text-xs font-semibold mb-2 leading-tight">{item.title}</p>
-            {item.description && <p className="text-[10px] text-slate-500 mb-2">{item.description}</p>}
+            <p className="text-xs font-semibold mb-2 leading-tight text-slate-900 dark:text-white">{item.title}</p>
+            {item.description && <p className="text-[10px] text-slate-500 dark:text-slate-400 mb-2">{item.description}</p>}
             
             <div className="flex items-center justify-between">
                 <AssigneeAvatars assignees={item.assignees} />
 
                 {item.status === 'Done' && (
-                     <span className="text-[10px] text-slate-500 uppercase font-bold tracking-tighter">Done</span>
+                     <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-tighter">Done</span>
                 )}
                 
                 {item.tag && (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-red-400/5 text-red-400 border border-red-400/20">{item.tag}</span>
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-red-400/5 dark:bg-red-400/5 text-red-600 dark:text-red-400 border border-red-400/20">{item.tag}</span>
                 )}
 
                 {item.progress > 0 && <ProgressBar progress={item.progress} color={progressBarColor} />}
