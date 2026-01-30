@@ -11,7 +11,7 @@ const App: React.FC = () => {
     const [items, setItems] = useState<RoadmapItem[]>(INITIAL_ITEMS);
     const [contextMenu, setContextMenu] = useState<ContextMenuState>({ visible: false, x: 0, y: 0, type: 'cell', data: {} });
     const [modal, setModal] = useState<ModalState>({ visible: false, type: 'add', data: {} });
-    const [viewMode, setViewMode] = useState<'week' | 'month' | 'quarter'>('month');
+    const [viewMode, setViewMode] = useState<'week' | 'month' | 'quarter'>('week');
     
     const closeContextMenu = useCallback(() => {
         setContextMenu(prev => ({ ...prev, visible: false }));
