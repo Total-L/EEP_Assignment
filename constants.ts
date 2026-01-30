@@ -15,7 +15,7 @@ export const PILLARS: Pillar[] = [
     { id: 4, title: 'Pillar 04', description: 'Mandatory & discretionary updates', color: 'azure' },
 ];
 
-export const DATES_WEEK: string[] = ['7 J', '14 J', '21 J', '28 J', '04 A', '11 A', '18 A', '25 A', '01 S', '08 S'];
+export const DATES_WEEK: string[] = ['7 JUL', '14 JUL', '21 JUL', '28 JUL', '04 AUG', '11 AUG', '18 AUG', '25 AUG', '01 SEP', '08 SEP'];
 export const DATES_MONTH: string[] = ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
 export const DATES_QUARTER: string[] = ['Q3 24', 'Q4 24', 'Q1 25', 'Q2 25', 'Q3 25', 'Q4 25', 'Q1 26', 'Q2 26', 'Q3 26', 'Q4 26'];
 

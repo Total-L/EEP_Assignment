@@ -22,22 +22,16 @@ const RoadmapGrid: React.FC<RoadmapGridProps> = ({ pillars, dates, items, onCont
     return (
         <div className="flex gap-x-4">
             {/* Date Timeline Column */}
-            <div className="w-[100px] flex-shrink-0">
+            <div className="w-[140px] flex-shrink-0">
                 <div className="h-[140px] mb-6 flex items-center justify-center font-bold text-slate-400 text-xs uppercase tracking-widest print-hidden">Date</div>
                 <div className="relative">
                     <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-px border-l border-dashed border-slate-700"></div>
                     {dates.map((date, dateIndex) => {
-                        const rowItemCount = items.filter(item => item.dateIndex === dateIndex).length;
                         return (
-                            <div key={dateIndex} className="h-[120px] flex items-center justify-start relative">
+                            <div key={dateIndex} className="h-[120px] flex items-center relative">
                                 <div className="absolute left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-slate-700 z-10"></div>
-                                <div className="pl-6 text-sm font-medium text-slate-500 flex items-center gap-1.5">
-                                    <span>{date}</span>
-                                    <div className="flex items-center gap-0.5">
-                                        {Array.from({ length: rowItemCount }).map((_, i) => (
-                                            <div key={i} className="w-1 h-1 rounded-full bg-slate-600"></div>
-                                        ))}
-                                    </div>
+                                <div className="w-1/2 pr-2 flex items-center justify-end">
+                                    <span className="text-sm font-medium text-slate-500 text-right whitespace-nowrap">{date}</span>
                                 </div>
                             </div>
                         );
