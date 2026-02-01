@@ -22,16 +22,16 @@ const RoadmapGrid: React.FC<RoadmapGridProps> = ({ pillars, dates, items, onCont
     return (
         <div className="flex gap-x-4">
             {/* Date Timeline Column */}
-            <div className="w-[140px] flex-shrink-0">
-                <div className="h-[140px] mb-6 flex items-center justify-center font-bold text-slate-400 text-xs uppercase tracking-widest print-hidden">Date</div>
+                <div className="w-[140px] flex-shrink-0">
+                <div className="h-[140px] mb-6 flex items-center justify-center font-bold text-slate-400 dark:text-slate-500 text-xs uppercase tracking-widest print-hidden">Date</div>
                 <div className="relative">
-                    <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-px border-l border-dashed border-slate-700"></div>
+                    <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-px border-l border-dashed border-slate-300 dark:border-slate-700"></div>
                     {dates.map((date, dateIndex) => {
                         return (
                             <div key={dateIndex} className="h-[120px] flex items-center relative">
-                                <div className="absolute left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-slate-700 z-10"></div>
+                                <div className="absolute left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-700 z-10"></div>
                                 <div className="w-1/2 pr-2 flex items-center justify-end">
-                                    <span className="text-sm font-medium text-slate-500 text-right whitespace-nowrap">{date}</span>
+                                    <span className="text-sm font-medium text-slate-600 dark:text-slate-500 text-right whitespace-nowrap">{date}</span>
                                 </div>
                             </div>
                         );
@@ -48,7 +48,7 @@ const RoadmapGrid: React.FC<RoadmapGridProps> = ({ pillars, dates, items, onCont
                     ))}
                 </div>
                 {/* Items Grid */}
-                <div className="border border-slate-800 rounded-2xl overflow-hidden">
+                <div className="border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden">
                     <div className="grid grid-cols-4 bg-transparent">
                         {dates.map((_, dateIndex) => (
                             <React.Fragment key={dateIndex}>
@@ -57,7 +57,7 @@ const RoadmapGrid: React.FC<RoadmapGridProps> = ({ pillars, dates, items, onCont
                                     return (
                                         <div
                                             key={`${dateIndex}-${columnIndex}`}
-                                            className={`p-2 h-[120px] relative ${columnIndex < pillars.length - 1 ? 'border-r' : ''} ${dateIndex < dates.length - 1 ? 'border-b' : ''} border-slate-800 border-dashed`}
+                                            className={`p-2 h-[120px] relative ${columnIndex < pillars.length - 1 ? 'border-r' : ''} ${dateIndex < dates.length - 1 ? 'border-b' : ''} border-slate-200 dark:border-slate-800 border-dashed`}
                                             onContextMenu={(e) => onContextMenu(e, 'cell', { dateIndex, columnIndex })}
                                             onDragOver={handleDragOver}
                                             onDrop={(e) => onDrop(e, dateIndex, columnIndex)}
