@@ -20,8 +20,8 @@ const Header: React.FC<HeaderProps> = ({ users, viewMode, setViewMode, onExport,
                         <span className="material-icons">rocket_launch</span>
                     </div>
                     <div>
-                        <h1 className="text-xl font-bold tracking-tight">Dark Mode Migration Roadmap</h1>
-                        <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Falcon LOMM & Firebird Infrastructure</p>
+                        <h1 className="text-xl font-bold tracking-tight">Project Roadmap</h1>
+                        <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">HSBC</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-6 print-hidden">

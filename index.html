@@ -5,6 +5,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Language" content="en" />
     <title>Interactive Roadmap Planner</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
@@ -40,30 +41,70 @@
         body { font-family: 'Inter', sans-serif; }
         @media print {
           body, html {
-            background: #0f1522 !important;
+            background: white !important;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
           }
           .print-hidden {
             display: none !important;
           }
+          /* Hide modals and overlays when printing */
+          .fixed.z-50 {
+            display: none !important;
+          }
+          /* Show only print modal */
+          .print-modal {
+            position: static !important;
+            display: block !important;
+            background: white !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            width: 100% !important;
+            height: auto !important;
+            overflow: visible !important;
+            margin: 0 !important;
+            max-width: none !important;
+            max-height: none !important;
+          }
+          .print-modal .print-hidden {
+            display: none !important;
+          }
+          .print-modal #print-content {
+            display: block !important;
+          }
+          /* Print specific styles */
           header {
             position: static !important;
             border: none !important;
-            background: #0f1522 !important;
+            background: white !important;
             backdrop-filter: none !important;
             padding-bottom: 1.5rem !important;
+            display: none !important;
           }
-           main {
-            padding: 0 !important;
+          main {
+            padding: 1rem !important;
             margin: 0 !important;
             max-width: 100% !important;
           }
           .border-slate-800 {
-            border-color: #334155 !important;
+            border-color: #e2e8f0 !important;
           }
           .dark .dark\:bg-background-dark {
-              background-color: #0f1522 !important;
+              background-color: white !important;
+          }
+          .bg-white\.dark\:bg-background-dark {
+            background: white !important;
+          }
+          /* Ensure text is visible in print */
+          .dark\:text-white {
+            color: #1f2937 !important;
+          }
+          .dark\:text-slate-300 {
+            color: #6b7280 !important;
+          }
+          @page {
+            margin: 0.5in;
+            size: A4;
           }
         }
     </style>
