@@ -39,6 +39,23 @@
     </script>
     <style>
         body { font-family: 'Inter', sans-serif; }
+        
+        /* Optimized scrollbar style */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+
         @media print {
           body, html {
             background: white !important;
@@ -48,11 +65,9 @@
           .print-hidden {
             display: none !important;
           }
-          /* Hide modals and overlays when printing */
           .fixed.z-50 {
             display: none !important;
           }
-          /* Show only print modal */
           .print-modal {
             position: static !important;
             display: block !important;
@@ -66,19 +81,7 @@
             max-width: none !important;
             max-height: none !important;
           }
-          .print-modal .print-hidden {
-            display: none !important;
-          }
-          .print-modal #print-content {
-            display: block !important;
-          }
-          /* Print specific styles */
           header {
-            position: static !important;
-            border: none !important;
-            background: white !important;
-            backdrop-filter: none !important;
-            padding-bottom: 1.5rem !important;
             display: none !important;
           }
           main {
@@ -92,10 +95,6 @@
           .dark .dark\:bg-background-dark {
               background-color: white !important;
           }
-          .bg-white\.dark\:bg-background-dark {
-            background: white !important;
-          }
-          /* Ensure text is visible in print */
           .dark\:text-white {
             color: #1f2937 !important;
           }
@@ -113,7 +112,12 @@
   "imports": {
     "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
     "react/": "https://esm.sh/react@^19.2.4/",
-    "react": "https://esm.sh/react@^19.2.4"
+    "react": "https://esm.sh/react@^19.2.4",
+    "vite": "https://esm.sh/vite@^7.3.1",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.4",
+    "path": "https://esm.sh/path@^0.12.7",
+    "html2canvas": "https://esm.sh/html2canvas@^1.4.1",
+    "jspdf": "https://esm.sh/jspdf@^4.1.0"
   }
 }
 </script>

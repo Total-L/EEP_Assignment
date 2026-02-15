@@ -40,16 +40,21 @@ const ItemModal: React.FC<ItemModalProps> = ({ modalState, onClose, onSave, user
         }
     }, [modalState, isEdit, initialData]);
 
+    // Fixed: Explicitly typed itemData and included the missing 'date' property to satisfy the RoadmapItem interface
     const handleSave = () => {
-        const itemData = {
+        const itemData: Omit<RoadmapItem, 'id'> = {
             title,
             description,
             pillarId,
             status,
             progress,
             assignees: users.filter(u => assigneeIds.includes(u.id)),
+            // Use current date as fallback for new items
+            date: isEdit ? initialData.date : (initialData.date || new Date().toISOString().split('T')[0]),
             dateIndex: isEdit ? initialData.dateIndex : initialData.dateIndex,
             columnIndex: isEdit ? initialData.columnIndex : pillars.findIndex(p => p.id === pillarId),
+            projectId: isEdit ? initialData.projectId : initialData.projectId,
+            tag: isEdit ? initialData.tag : undefined
         };
         onSave(itemData, isEdit ? initialData.id : undefined);
     };
