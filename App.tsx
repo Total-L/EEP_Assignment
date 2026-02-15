@@ -48,12 +48,24 @@ const App: React.FC = () => {
         const dates = getDatesForViewMode();
         const newDateLabel = dates[dateIndex];
         
+        let newDate: string;
+        if (viewMode === 'week') {
+            const startDate = new Date('2024-07-07');
+            startDate.setDate(startDate.getDate() + dateIndex * 7);
+            newDate = startDate.toISOString().split('T')[0];
+        } else if (viewMode === 'month') {
+            const monthIndex = dateIndex >= 6 ? dateIndex - 6 : dateIndex + 6;
+            newDate = `2024-${String(monthIndex + 7).padStart(2, '0')}-01`;
+        } else {
+            const quarterYearMap: { [key: number]: string } = { 0: '2024', 1: '2024', 2: '2025', 3: '2025', 4: '2025', 5: '2025', 6: '2026', 7: '2026' };
+            const quarterMonthMap: { [key: number]: number } = { 0: 6, 1: 9, 2: 0, 3: 3, 4: 6, 5: 9, 6: 0, 7: 3 };
+            newDate = `${quarterYearMap[dateIndex]}-${String(quarterMonthMap[dateIndex] + 1).padStart(2, '0')}-01`;
+        }
+        
         setItems(prevItems =>
             prevItems.map(item => {
                 if (item.id === itemId) {
-                    // Update the absolute date string based on the new slot
-                    // This is a simplified logic to persist date-based positioning
-                    return { ...item, dateIndex, columnIndex };
+                    return { ...item, dateIndex, columnIndex, date: newDate };
                 }
                 return item;
             })
