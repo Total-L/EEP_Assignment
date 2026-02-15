@@ -46,7 +46,6 @@ const App: React.FC = () => {
     const handleDrop = (e: React.DragEvent, dateIndex: number, columnIndex: number) => {
         const itemId = e.dataTransfer.getData("itemId");
         const dates = getDatesForViewMode();
-        const newDateLabel = dates[dateIndex];
         
         let newDate: string;
         if (viewMode === 'week') {
@@ -54,12 +53,13 @@ const App: React.FC = () => {
             startDate.setDate(startDate.getDate() + dateIndex * 7);
             newDate = startDate.toISOString().split('T')[0];
         } else if (viewMode === 'month') {
-            const monthIndex = dateIndex >= 6 ? dateIndex - 6 : dateIndex + 6;
-            newDate = `2024-${String(monthIndex + 7).padStart(2, '0')}-01`;
+            const month = dateIndex >= 6 ? dateIndex - 6 : dateIndex + 6;
+            newDate = `2024-${String(month + 1).padStart(2, '0')}-01`;
         } else {
-            const quarterYearMap: { [key: number]: string } = { 0: '2024', 1: '2024', 2: '2025', 3: '2025', 4: '2025', 5: '2025', 6: '2026', 7: '2026' };
-            const quarterMonthMap: { [key: number]: number } = { 0: 6, 1: 9, 2: 0, 3: 3, 4: 6, 5: 9, 6: 0, 7: 3 };
-            newDate = `${quarterYearMap[dateIndex]}-${String(quarterMonthMap[dateIndex] + 1).padStart(2, '0')}-01`;
+            const year = 2024 + Math.floor(dateIndex / 4);
+            const quarter = dateIndex % 4;
+            const month = (quarter * 3 + 6) % 12;
+            newDate = `${year}-${String(month + 1).padStart(2, '0')}-01`;
         }
         
         setItems(prevItems =>
@@ -122,11 +122,9 @@ const App: React.FC = () => {
                 return adjustedMonth;
             }
             case 'quarter': {
+                const year = date.getFullYear();
                 const quarter = Math.floor(month / 3);
-                const qIndex = quarter >= 3 ? quarter - 3 : quarter + 1;
-                const qStr = `Q${qIndex} ${year}`;
-                const quarterMap: { [key: string]: number } = { 'Q3 24': 0, 'Q4 24': 1, 'Q1 25': 2, 'Q2 25': 3, 'Q3 25': 4, 'Q4 25': 5, 'Q1 26': 6, 'Q2 26': 7 };
-                return quarterMap[qStr] ?? 0;
+                return (year - 2024) * 4 + (quarter + 2) % 4;
             }
             case 'week':
             default: {
