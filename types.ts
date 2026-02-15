@@ -5,6 +5,12 @@ export interface User {
   avatarUrl: string;
 }
 
+export interface Project {
+  id: string;
+  name: string;
+  client: string;
+}
+
 export enum Status {
   Todo = 'Todo',
   InProgress = 'In Progress',
@@ -16,13 +22,15 @@ export interface RoadmapItem {
   id: string;
   title: string;
   pillarId: number;
-  dateIndex: number;
+  date: string; // Absolute date string like '2024-07-07' to handle dynamic view modes
+  dateIndex: number; // Derived based on view mode
   columnIndex: number;
   progress: number;
   status: Status;
   assignees: User[];
   tag?: string;
   description?: string;
+  projectId?: string;
 }
 
 export interface Pillar {
