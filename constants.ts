@@ -10,8 +10,8 @@ export const USERS: User[] = [
 
 export const PROJECTS: Project[] = [
     { id: 'p1', name: 'Project Roadmap', client: 'HSBC' },
-    { id: 'p2', name: 'Cloud Migration', client: 'JP Morgan' },
-    { id: 'p3', name: 'Cyber Security', client: 'Barclays' }
+    { id: 'p2', name: 'Cloud Migration', client: 'HSBC' },
+    { id: 'p3', name: 'Cyber Security', client: 'HSBC' }
 ];
 
 export const PILLARS: Pillar[] = [
@@ -21,11 +21,12 @@ export const PILLARS: Pillar[] = [
     { id: 4, title: 'Pillar 04', description: 'Mandatory & discretionary updates', color: 'azure' },
 ];
 
-export const DATES_WEEK: string[] = ['7 JUL', '14 JUL', '21 JUL', '28 JUL', '04 AUG', '11 AUG', '18 AUG', '25 AUG', '01 SEP', '08 SEP'];
-export const DATES_MONTH: string[] = ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
-export const DATES_QUARTER: string[] = ['Q3 24', 'Q4 24', 'Q1 25', 'Q2 25', 'Q3 25', 'Q4 25', 'Q1 26', 'Q2 26', 'Q3 26', 'Q4 26'];
+export const DATES_WEEK: string[] = ['7 JUL', '14 JUL', '21 JUL', '28 JUL', '04 AUG', '11 AUG', '18 AUG', '25 AUG', '01 SEP', '08 SEP', '15 SEP', '22 SEP', '29 SEP', '06 OCT', '13 OCT', '20 OCT'];
+export const DATES_MONTH: string[] = ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+export const DATES_QUARTER: string[] = ['Q3 24', 'Q4 24', 'Q1 25', 'Q2 25', 'Q3 25', 'Q4 25', 'Q1 26', 'Q2 26'];
 
 export const INITIAL_ITEMS: RoadmapItem[] = [
+    // Project Roadmap (p1) - HSBC
     { id: 'item1', title: 'Review and address pricing difference vs Horizon', pillarId: 1, date: '2024-07-07', dateIndex: 0, columnIndex: 0, progress: 85, status: Status.InProgress, assignees: [USERS[2]], projectId: 'p1' },
     { id: 'item4', title: 'Pricing template generation', pillarId: 1, date: '2024-07-14', dateIndex: 1, columnIndex: 0, progress: 0, status: Status.Todo, assignees: [], projectId: 'p1' },
     { id: 'item3', title: 'Ladder2 pricing requests to Firebird', pillarId: 2, date: '2024-07-14', dateIndex: 1, columnIndex: 1, progress: 0, status: Status.Todo, assignees: [], projectId: 'p1' },
@@ -41,4 +42,37 @@ export const INITIAL_ITEMS: RoadmapItem[] = [
     { id: 'item13', title: 'Deploy additional MMEs pricing', pillarId: 1, date: '2024-08-04', dateIndex: 4, columnIndex: 0, progress: 0, status: Status.Todo, assignees: [], projectId: 'p1' },
     { id: 'item14', title: 'Complete migration to ladders v2', pillarId: 2, date: '2024-08-11', dateIndex: 5, columnIndex: 1, progress: 0, status: Status.Todo, assignees: [], projectId: 'p1' },
     { id: 'item15', title: 'Complete support for additional connections', pillarId: 3, date: '2024-08-11', dateIndex: 5, columnIndex: 2, progress: 0, status: Status.Todo, assignees: [], projectId: 'p1' },
+    { id: 'item16', title: 'Performance testing and optimization', pillarId: 1, date: '2024-08-18', dateIndex: 6, columnIndex: 0, progress: 0, status: Status.Todo, assignees: [USERS[0]], projectId: 'p1' },
+    { id: 'item17', title: 'Documentation and training', pillarId: 4, date: '2024-08-25', dateIndex: 7, columnIndex: 3, progress: 0, status: Status.Todo, assignees: [], projectId: 'p1' },
+    { id: 'item18', title: 'User acceptance testing', pillarId: 2, date: '2024-09-01', dateIndex: 8, columnIndex: 1, progress: 0, status: Status.Todo, assignees: [USERS[1]], projectId: 'p1' },
+    { id: 'item19', title: 'Production deployment', pillarId: 1, date: '2024-09-15', dateIndex: 10, columnIndex: 0, progress: 0, status: Status.Todo, assignees: [], projectId: 'p1' },
+    { id: 'item20', title: 'Post-deployment support', pillarId: 4, date: '2024-09-22', dateIndex: 11, columnIndex: 3, progress: 0, status: Status.Todo, assignees: [], projectId: 'p1' },
+
+    // Cloud Migration (p2) - HSBC
+    { id: 'cloud1', title: 'Infrastructure assessment', pillarId: 1, date: '2024-07-07', dateIndex: 0, columnIndex: 0, progress: 100, status: Status.Done, assignees: [USERS[0]], projectId: 'p2' },
+    { id: 'cloud2', title: 'Define cloud architecture', pillarId: 2, date: '2024-07-14', dateIndex: 1, columnIndex: 1, progress: 75, status: Status.InProgress, assignees: [USERS[2]], projectId: 'p2' },
+    { id: 'cloud3', title: 'Security compliance review', pillarId: 4, date: '2024-07-21', dateIndex: 2, columnIndex: 3, progress: 50, status: Status.InProgress, assignees: [], projectId: 'p2' },
+    { id: 'cloud4', title: 'Data migration strategy', pillarId: 3, date: '2024-07-28', dateIndex: 3, columnIndex: 2, progress: 30, status: Status.InProgress, assignees: [USERS[3]], projectId: 'p2' },
+    { id: 'cloud5', title: 'Proof of concept development', pillarId: 1, date: '2024-08-04', dateIndex: 4, columnIndex: 0, progress: 0, status: Status.Todo, assignees: [], projectId: 'p2' },
+    { id: 'cloud6', title: 'Network configuration', pillarId: 2, date: '2024-08-11', dateIndex: 5, columnIndex: 1, progress: 0, status: Status.Todo, assignees: [], projectId: 'p2' },
+    { id: 'cloud7', title: 'Load testing', pillarId: 3, date: '2024-08-18', dateIndex: 6, columnIndex: 2, progress: 0, status: Status.Todo, assignees: [USERS[1]], projectId: 'p2' },
+    { id: 'cloud8', title: 'Disaster recovery setup', pillarId: 4, date: '2024-08-25', dateIndex: 7, columnIndex: 3, progress: 0, status: Status.Todo, assignees: [], projectId: 'p2' },
+    { id: 'cloud9', title: 'Pilot migration', pillarId: 1, date: '2024-09-01', dateIndex: 8, columnIndex: 0, progress: 0, status: Status.Todo, assignees: [], projectId: 'p2' },
+    { id: 'cloud10', title: 'Full migration execution', pillarId: 2, date: '2024-09-15', dateIndex: 10, columnIndex: 1, progress: 0, status: Status.Todo, assignees: [], projectId: 'p2' },
+    { id: 'cloud11', title: 'Performance monitoring', pillarId: 3, date: '2024-09-22', dateIndex: 11, columnIndex: 2, progress: 0, status: Status.Todo, assignees: [], projectId: 'p2' },
+    { id: 'cloud12', title: 'Cloud optimization', pillarId: 1, date: '2024-10-06', dateIndex: 13, columnIndex: 0, progress: 0, status: Status.Todo, assignees: [USERS[0]], projectId: 'p2' },
+
+    // Cyber Security (p3) - HSBC
+    { id: 'cyber1', title: 'Security audit', pillarId: 4, date: '2024-07-07', dateIndex: 0, columnIndex: 3, progress: 100, status: Status.Done, assignees: [USERS[1]], projectId: 'p3' },
+    { id: 'cyber2', title: 'Vulnerability assessment', pillarId: 1, date: '2024-07-14', dateIndex: 1, columnIndex: 0, progress: 90, status: Status.InProgress, assignees: [], projectId: 'p3' },
+    { id: 'cyber3', title: 'Penetration testing', pillarId: 2, date: '2024-07-21', dateIndex: 2, columnIndex: 1, progress: 60, status: Status.InProgress, assignees: [USERS[2]], projectId: 'p3' },
+    { id: 'cyber4', title: 'Security patching', pillarId: 4, date: '2024-07-28', dateIndex: 3, columnIndex: 3, progress: 45, status: Status.InProgress, assignees: [], projectId: 'p3' },
+    { id: 'cyber5', title: 'Incident response plan', pillarId: 3, date: '2024-08-04', dateIndex: 4, columnIndex: 2, progress: 20, status: Status.InProgress, assignees: [USERS[3]], projectId: 'p3' },
+    { id: 'cyber6', title: 'Firewall configuration', pillarId: 1, date: '2024-08-11', dateIndex: 5, columnIndex: 0, progress: 0, status: Status.Todo, assignees: [], projectId: 'p3' },
+    { id: 'cyber7', title: 'Encryption implementation', pillarId: 2, date: '2024-08-18', dateIndex: 6, columnIndex: 1, progress: 0, status: Status.Todo, assignees: [], projectId: 'p3' },
+    { id: 'cyber8', title: 'Access control review', pillarId: 4, date: '2024-08-25', dateIndex: 7, columnIndex: 3, progress: 0, status: Status.Todo, assignees: [USERS[0]], projectId: 'p3' },
+    { id: 'cyber9', title: 'Threat monitoring setup', pillarId: 3, date: '2024-09-01', dateIndex: 8, columnIndex: 2, progress: 0, status: Status.Todo, assignees: [], projectId: 'p3' },
+    { id: 'cyber10', title: 'Security training', pillarId: 4, date: '2024-09-08', dateIndex: 9, columnIndex: 3, progress: 0, status: Status.Todo, assignees: [], projectId: 'p3' },
+    { id: 'cyber11', title: 'Compliance certification', pillarId: 1, date: '2024-09-15', dateIndex: 10, columnIndex: 0, progress: 0, status: Status.Todo, assignees: [USERS[1]], projectId: 'p3' },
+    { id: 'cyber12', title: 'Annual security review', pillarId: 4, date: '2024-10-20', dateIndex: 15, columnIndex: 3, progress: 0, status: Status.Todo, assignees: [], projectId: 'p3' },
 ];

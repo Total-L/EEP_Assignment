@@ -46,14 +46,26 @@ const App: React.FC = () => {
     const handleDrop = (e: React.DragEvent, dateIndex: number, columnIndex: number) => {
         const itemId = e.dataTransfer.getData("itemId");
         const dates = getDatesForViewMode();
-        const newDateLabel = dates[dateIndex];
+        
+        let newDate: string;
+        if (viewMode === 'week') {
+            const startDate = new Date('2024-07-07');
+            startDate.setDate(startDate.getDate() + dateIndex * 7);
+            newDate = startDate.toISOString().split('T')[0];
+        } else if (viewMode === 'month') {
+            const month = dateIndex >= 6 ? dateIndex - 6 : dateIndex + 6;
+            newDate = `2024-${String(month + 1).padStart(2, '0')}-01`;
+        } else {
+            const year = 2024 + Math.floor(dateIndex / 4);
+            const quarter = dateIndex % 4;
+            const month = (quarter * 3 + 6) % 12;
+            newDate = `${year}-${String(month + 1).padStart(2, '0')}-01`;
+        }
         
         setItems(prevItems =>
             prevItems.map(item => {
                 if (item.id === itemId) {
-                    // Update the absolute date string based on the new slot
-                    // This is a simplified logic to persist date-based positioning
-                    return { ...item, dateIndex, columnIndex };
+                    return { ...item, dateIndex, columnIndex, date: newDate };
                 }
                 return item;
             })
@@ -99,18 +111,40 @@ const App: React.FC = () => {
         }
     }, [viewMode]);
 
+    const getDateIndexForViewMode = useCallback((itemDate: string, viewMode: string): number => {
+        const date = new Date(itemDate);
+        const month = date.getMonth();
+        const year = date.getFullYear() % 100;
+        
+        switch (viewMode) {
+            case 'month': {
+                const adjustedMonth = month >= 6 ? month - 6 : month + 6;
+                return adjustedMonth;
+            }
+            case 'quarter': {
+                const year = date.getFullYear();
+                const quarter = Math.floor(month / 3);
+                return (year - 2024) * 4 + (quarter + 2) % 4;
+            }
+            case 'week':
+            default: {
+                const startDate = new Date('2024-07-07');
+                const diffDays = Math.floor((date.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+                return Math.min(Math.max(Math.floor(diffDays / 7), 0), DATES_WEEK.length - 1);
+            }
+        }
+    }, [viewMode]);
+
     // Compute active items based on selected view mode and project
     const activeItems = useMemo(() => {
         const currentDates = getDatesForViewMode();
         return items
             .filter(item => item.projectId === selectedProject.id)
             .map(item => {
-                // Map the item's position based on viewMode labels
-                // In a production app, we'd use real Date objects and find the correct index
-                // Here we just use the logic that they shift relative to their initial slot
-                return { ...item }; 
+                const newDateIndex = getDateIndexForViewMode(item.date, viewMode);
+                return { ...item, dateIndex: newDateIndex };
             });
-    }, [items, selectedProject, viewMode, getDatesForViewMode]);
+    }, [items, selectedProject, viewMode, getDatesForViewMode, getDateIndexForViewMode]);
     
     const handleExport = async () => {
         try {
