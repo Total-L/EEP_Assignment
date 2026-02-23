@@ -61,7 +61,7 @@ const ItemModal: React.FC<ItemModalProps> = ({ modalState, onClose, onSave, user
             endDate: validEndDate,
             dateIndex: isEdit ? initialData.dateIndex : initialData.dateIndex,
             endDateIndex: isEdit ? initialData.endDateIndex : initialData.dateIndex,
-            columnIndex: isEdit ? initialData.columnIndex : pillars.findIndex(p => p.id === pillarId),
+            columnIndex: pillars.findIndex(p => p.id === pillarId),
             projectId: isEdit ? initialData.projectId : initialData.projectId,
             tag: isEdit ? initialData.tag : undefined
         };

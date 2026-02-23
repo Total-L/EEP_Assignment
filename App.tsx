@@ -231,8 +231,33 @@ const App: React.FC = () => {
         }
         if (contextMenu.type === 'item') {
             const item = (contextMenu.data as {item: RoadmapItem}).item;
+            
+            // Cycle through statuses: Todo → InProgress → Done → Delayed → Todo
+            const statusCycle = [Status.Todo, Status.InProgress, Status.Done, Status.Delayed];
+            const currentStatusIndex = statusCycle.indexOf(item.status);
+            const nextStatus = statusCycle[(currentStatusIndex + 1) % statusCycle.length];
+            
             return [
                 { label: 'Edit Item', action: () => handleEditItem(item) },
+                { label: `Change Status to ${nextStatus}`, action: () => {
+                    setItems(prev => prev.map(i => 
+                        i.id === item.id ? { ...i, status: nextStatus } : i
+                    ));
+                }},
+                { label: 'Increase Progress 25%', action: () => {
+                    setItems(prev => prev.map(i => 
+                        i.id === item.id ? { ...i, progress: Math.min(i.progress + 25, 100) } : i
+                    ));
+                }},
+                { label: 'Duplicate Item', action: () => {
+                    const duplicatedItem: RoadmapItem = {
+                        ...item,
+                        id: `item-${Date.now()}`,
+                        startDate: item.startDate,
+                        endDate: item.endDate,
+                    };
+                    setItems(prev => [...prev, duplicatedItem]);
+                }},
                 { label: 'Delete Item', action: () => handleDeleteItem(item), isDestructive: true },
             ];
         }
