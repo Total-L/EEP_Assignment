@@ -15,38 +15,83 @@ interface RoadmapGridProps {
 
 const ROW_HEIGHT = 120;
 const ROW_GAP = 8;
+const MIN_ITEM_HEIGHT = ROW_HEIGHT - ROW_GAP; // Ensure single-point items are visible
 
 function computePositionedItems(items: RoadmapItem[], totalRows: number): PositionedItem[] {
-    const sorted = [...items].sort((a, b) => a.dateIndex - b.dateIndex);
-    const tracks: RoadmapItem[][] = [];
+    if (items.length === 0) return [];
+
+    // Helper function to calculate item's visual bounds for collision detection
+    const getItemBounds = (item: RoadmapItem) => {
+        const top = item.dateIndex * ROW_HEIGHT + ROW_GAP / 2;
+        const height = Math.max((item.endDateIndex - item.dateIndex) * ROW_HEIGHT - ROW_GAP, MIN_ITEM_HEIGHT);
+        const bottom = top + height;
+        return { top, bottom, height };
+    };
+
+    // Helper function to check if two items visually conflict
+    // Considers both temporal overlap and vertical proximity
+    const itemsConflict = (a: RoadmapItem, b: RoadmapItem): boolean => {
+        // Check temporal overlap: use < to include items at same time point
+        const temporalOverlap = !(a.endDateIndex < b.dateIndex || b.endDateIndex < a.dateIndex);
+        if (temporalOverlap) return true;
+
+        // Check vertical proximity even if not temporally overlapping
+        // This prevents tall items from visually blocking items below
+        const boundsA = getItemBounds(a);
+        const boundsB = getItemBounds(b);
+        
+        // Add vertical buffer to ensure visible separation
+        const verticalBuffer = 2;
+        const verticalConflict = !(boundsA.bottom + verticalBuffer < boundsB.top || boundsB.bottom + verticalBuffer < boundsA.top);
+        
+        return verticalConflict;
+    };
+
+    // For each item, find which track it should be in
+    // A track is a horizontal position; conflicting items must be in different tracks
+    const itemToTrack = new Map<string, number>();
+    
+    // Sort items by start time, then by end time (descending) to handle nested items better
+    const sorted = [...items].sort((a, b) => {
+        if (a.dateIndex !== b.dateIndex) return a.dateIndex - b.dateIndex;
+        return b.endDateIndex - a.endDateIndex;
+    });
 
     for (const item of sorted) {
-        let placed = false;
-        for (const track of tracks) {
-            const last = track[track.length - 1];
-            const lastEnd = Math.min(last.endDateIndex, totalRows - 1);
-            if (lastEnd < item.dateIndex) {
-                track.push(item);
-                placed = true;
-                break;
+        // Find all items that conflict with this item and have already been assigned a track
+        const conflictingTracksInUse = new Set<number>();
+        for (const other of items) {
+            if (other.id !== item.id && itemToTrack.has(other.id) && itemsConflict(item, other)) {
+                const otherTrack = itemToTrack.get(other.id)!;
+                conflictingTracksInUse.add(otherTrack);
             }
         }
-        if (!placed) tracks.push([item]);
+
+        // Find the first available track (not used by any conflicting item)
+        let track = 0;
+        while (conflictingTracksInUse.has(track)) {
+            track++;
+        }
+        itemToTrack.set(item.id, track);
     }
 
-    const totalTracks = Math.max(tracks.length, 1);
-    return tracks.flatMap((track, trackIndex) =>
-        track.map(item => {
-            const clampedEnd = Math.min(item.endDateIndex, totalRows - 1);
-            return {
-                ...item,
-                top: item.dateIndex * ROW_HEIGHT + ROW_GAP / 2,
-                height: (clampedEnd - item.dateIndex + 1) * ROW_HEIGHT - ROW_GAP,
-                left: trackIndex / totalTracks,
-                width: 1 / totalTracks,
-            };
-        })
-    );
+    // Calculate total number of tracks needed
+    const allTracks = Array.from(itemToTrack.values());
+    const totalTracks = allTracks.length > 0 ? Math.max(...allTracks) + 1 : 1;
+
+    // Create positioned items
+    return items.map(item => {
+        const track = itemToTrack.get(item.id) || 0;
+        const height = Math.max((item.endDateIndex - item.dateIndex) * ROW_HEIGHT - ROW_GAP, MIN_ITEM_HEIGHT);
+        
+        return {
+            ...item,
+            top: item.dateIndex * ROW_HEIGHT + ROW_GAP / 2,
+            height: height,
+            left: track / totalTracks,
+            width: 1 / totalTracks,
+        };
+    });
 }
 
 const RoadmapGrid: React.FC<RoadmapGridProps> = ({ pillars, dates, items, onContextMenu, onDragStart, onDrop }) => {

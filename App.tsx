@@ -45,17 +45,27 @@ const App: React.FC = () => {
 
     const dateIndexToAbsoluteDate = useCallback((idx: number, mode: string): string => {
         if (mode === 'week') {
-            const d = new Date('2024-07-07');
-            d.setDate(d.getDate() + idx * 7);
-            return d.toISOString().split('T')[0];
+            // Base date: 2026-02-23 (Monday) is week 0
+            // idx can be a float: 0.0 = Monday, 1.0 = following Monday, etc.
+            const baseDate = new Date('2026-02-23');
+            const daysToAdd = idx * 7;
+            baseDate.setDate(baseDate.getDate() + Math.floor(daysToAdd));
+            return baseDate.toISOString().split('T')[0];
         } else if (mode === 'month') {
-            const month = idx >= 6 ? idx - 6 : idx + 6;
-            return `2024-${String(month + 1).padStart(2, '0')}-01`;
-        } else {
-            const year = 2024 + Math.floor(idx / 4);
-            const quarter = idx % 4;
-            const month = (quarter * 3 + 6) % 12;
+            // 12-month cycle starting from Feb 2026
+            const baseMonth = 1; // Feb = month 1 (0-indexed)
+            const baseYear = 2026;
+            let month = (baseMonth + Math.floor(idx)) % 12;
+            let year = baseYear + Math.floor((baseMonth + Math.floor(idx)) / 12);
             return `${year}-${String(month + 1).padStart(2, '0')}-01`;
+        } else {
+            // 8-quarter cycle starting from Q1 26 (Jan-Mar)
+            const totalQuarters = Math.floor(idx);
+            const baseYear = 2026;
+            const year = baseYear + Math.floor(totalQuarters / 4);
+            const quarterInYear = totalQuarters % 4;
+            const month = quarterInYear * 3 + 1; // Q0=Jan(1), Q1=Apr(4), Q2=Jul(7), Q3=Oct(10)
+            return `${year}-${String(month).padStart(2, '0')}-01`;
         }
     }, []);
 
@@ -117,26 +127,43 @@ const App: React.FC = () => {
     const getDateIndexForViewMode = useCallback((itemDate: string, viewMode: string): number => {
         const date = new Date(itemDate);
         const month = date.getMonth();
-        const year = date.getFullYear() % 100;
+        const year = date.getFullYear();
+        const day = date.getDate();
         
         switch (viewMode) {
             case 'month': {
-                const adjustedMonth = month >= 6 ? month - 6 : month + 6;
-                return adjustedMonth;
+                // Each month is a grid cell
+                // 12-month cycle starting from Feb 2026
+                const baseMonth = 1; // Feb = index 1 in JS (0=Jan)
+                const baseYear = 2026;
+                const monthsFromBase = (year - baseYear) * 12 + (month - baseMonth);
+                return (monthsFromBase % 12 + 12) % 12; // Wrap around 12 months
             }
             case 'quarter': {
-                const year = date.getFullYear();
+                // Each quarter is a grid cell
+                // 8-quarter cycle starting from Q1 26
                 const quarter = Math.floor(month / 3);
-                return (year - 2024) * 4 + (quarter + 2) % 4;
+                // Q1 26 = quarter 0 (months 0-2), but we start from Q1 (months 0-2)
+                // Actually, the quarter labels start from Q1 26 which includes Jan-Mar
+                // But 2026 Q1 is Jan-Mar, so quarter 0 = months 0-2
+                // month = 0 (Jan), 1 (Feb), 2 (Mar) → quarter 0
+                // month = 3 (Apr), 4 (May), 5 (Jun) → quarter 1
+                // etc.
+                const quartersFromBase = (year - 2026) * 4 + quarter;
+                return (quartersFromBase % 8 + 8) % 8; // Wrap around 8 quarters
             }
             case 'week':
             default: {
-                const startDate = new Date('2024-07-07');
-                const diffDays = Math.floor((date.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-                return Math.min(Math.max(Math.floor(diffDays / 7), 0), DATES_WEEK.length - 1);
+                // Support day-level precision: dateIndex can be float
+                // Base: 2026-02-23 is week 0
+                const baseDate = new Date('2026-02-23');
+                const diffMs = date.getTime() - baseDate.getTime();
+                const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                const weekIndex = diffDays / 7;
+                return Math.max(weekIndex, 0);
             }
         }
-    }, [viewMode]);
+    }, []);
 
     // Compute active items based on selected view mode and project
     const activeItems = useMemo(() => {
