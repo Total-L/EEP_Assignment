@@ -22,8 +22,11 @@ export interface RoadmapItem {
   id: string;
   title: string;
   pillarId: number;
-  date: string; // Absolute date string like '2024-07-07' to handle dynamic view modes
-  dateIndex: number; // Derived based on view mode
+  date: string; // Absolute date string like '2024-07-07' — alias for startDate
+  startDate: string; // Start date of the item
+  endDate: string;   // End date of the item (same as startDate for single-row)
+  dateIndex: number; // Derived from startDate based on view mode
+  endDateIndex: number; // Derived from endDate based on view mode
   columnIndex: number;
   progress: number;
   status: Status;
@@ -31,6 +34,13 @@ export interface RoadmapItem {
   tag?: string;
   description?: string;
   projectId?: string;
+}
+
+export interface PositionedItem extends RoadmapItem {
+  top: number;
+  height: number;
+  left: number;
+  width: number;
 }
 
 export interface Pillar {

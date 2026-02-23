@@ -43,31 +43,34 @@ const App: React.FC = () => {
         e.dataTransfer.setData("itemId", itemId);
     };
 
+    const dateIndexToAbsoluteDate = useCallback((idx: number, mode: string): string => {
+        if (mode === 'week') {
+            const d = new Date('2024-07-07');
+            d.setDate(d.getDate() + idx * 7);
+            return d.toISOString().split('T')[0];
+        } else if (mode === 'month') {
+            const month = idx >= 6 ? idx - 6 : idx + 6;
+            return `2024-${String(month + 1).padStart(2, '0')}-01`;
+        } else {
+            const year = 2024 + Math.floor(idx / 4);
+            const quarter = idx % 4;
+            const month = (quarter * 3 + 6) % 12;
+            return `${year}-${String(month + 1).padStart(2, '0')}-01`;
+        }
+    }, []);
+
     const handleDrop = (e: React.DragEvent, dateIndex: number, columnIndex: number) => {
         const itemId = e.dataTransfer.getData("itemId");
-        const dates = getDatesForViewMode();
-        
-        let newDate: string;
-        if (viewMode === 'week') {
-            const startDate = new Date('2024-07-07');
-            startDate.setDate(startDate.getDate() + dateIndex * 7);
-            newDate = startDate.toISOString().split('T')[0];
-        } else if (viewMode === 'month') {
-            const month = dateIndex >= 6 ? dateIndex - 6 : dateIndex + 6;
-            newDate = `2024-${String(month + 1).padStart(2, '0')}-01`;
-        } else {
-            const year = 2024 + Math.floor(dateIndex / 4);
-            const quarter = dateIndex % 4;
-            const month = (quarter * 3 + 6) % 12;
-            newDate = `${year}-${String(month + 1).padStart(2, '0')}-01`;
-        }
-        
+
         setItems(prevItems =>
             prevItems.map(item => {
-                if (item.id === itemId) {
-                    return { ...item, dateIndex, columnIndex, date: newDate };
-                }
-                return item;
+                if (item.id !== itemId) return item;
+                const oldStart = new Date(item.startDate).getTime();
+                const oldEnd = new Date(item.endDate).getTime();
+                const durationMs = oldEnd - oldStart;
+                const newStartDate = dateIndexToAbsoluteDate(dateIndex, viewMode);
+                const newEndDate = new Date(new Date(newStartDate).getTime() + durationMs).toISOString().split('T')[0];
+                return { ...item, dateIndex, columnIndex, date: newStartDate, startDate: newStartDate, endDate: newEndDate };
             })
         );
     };
@@ -137,12 +140,12 @@ const App: React.FC = () => {
 
     // Compute active items based on selected view mode and project
     const activeItems = useMemo(() => {
-        const currentDates = getDatesForViewMode();
         return items
-            .filter(item => item.projectId === selectedProject.id)
-            .map(item => {
-                const newDateIndex = getDateIndexForViewMode(item.date, viewMode);
-                return { ...item, dateIndex: newDateIndex };
+            .filter((item: RoadmapItem) => item.projectId === selectedProject.id)
+            .map((item: RoadmapItem) => {
+                const newDateIndex = getDateIndexForViewMode(item.startDate, viewMode);
+                const newEndDateIndex = getDateIndexForViewMode(item.endDate, viewMode);
+                return { ...item, dateIndex: newDateIndex, endDateIndex: newEndDateIndex };
             });
     }, [items, selectedProject, viewMode, getDatesForViewMode, getDateIndexForViewMode]);
     

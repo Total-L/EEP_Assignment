@@ -20,6 +20,8 @@ const ItemModal: React.FC<ItemModalProps> = ({ modalState, onClose, onSave, user
     const [status, setStatus] = useState<Status>(Status.Todo);
     const [progress, setProgress] = useState(0);
     const [assigneeIds, setAssigneeIds] = useState<string[]>([]);
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
     
     useEffect(() => {
         if (isEdit && initialData) {
@@ -29,19 +31,24 @@ const ItemModal: React.FC<ItemModalProps> = ({ modalState, onClose, onSave, user
             setStatus(initialData.status || Status.Todo);
             setProgress(initialData.progress || 0);
             setAssigneeIds(initialData.assignees?.map((u: User) => u.id) || []);
+            setStartDate(initialData.startDate || initialData.date || '');
+            setEndDate(initialData.endDate || initialData.date || '');
         } else if (!isEdit && initialData) {
             setPillarId(initialData.pillarId || 1);
-            // Reset fields for 'add' mode
             setTitle('');
             setDescription('');
             setStatus(Status.Todo);
             setProgress(0);
             setAssigneeIds([]);
+            const derivedDate = initialData.date || new Date().toISOString().split('T')[0];
+            setStartDate(derivedDate);
+            setEndDate(derivedDate);
         }
     }, [modalState, isEdit, initialData]);
 
     // Fixed: Explicitly typed itemData and included the missing 'date' property to satisfy the RoadmapItem interface
     const handleSave = () => {
+        const validEndDate = endDate >= startDate ? endDate : startDate;
         const itemData: Omit<RoadmapItem, 'id'> = {
             title,
             description,
@@ -49,9 +56,11 @@ const ItemModal: React.FC<ItemModalProps> = ({ modalState, onClose, onSave, user
             status,
             progress,
             assignees: users.filter(u => assigneeIds.includes(u.id)),
-            // Use current date as fallback for new items
-            date: isEdit ? initialData.date : (initialData.date || new Date().toISOString().split('T')[0]),
+            date: startDate,
+            startDate,
+            endDate: validEndDate,
             dateIndex: isEdit ? initialData.dateIndex : initialData.dateIndex,
+            endDateIndex: isEdit ? initialData.endDateIndex : initialData.dateIndex,
             columnIndex: isEdit ? initialData.columnIndex : pillars.findIndex(p => p.id === pillarId),
             projectId: isEdit ? initialData.projectId : initialData.projectId,
             tag: isEdit ? initialData.tag : undefined
@@ -84,6 +93,16 @@ const ItemModal: React.FC<ItemModalProps> = ({ modalState, onClose, onSave, user
                         <select value={pillarId} onChange={e => setPillarId(Number(e.target.value))} className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md p-2 mt-1 text-slate-900 dark:text-white focus:ring-primary focus:border-primary">
                             {pillars.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}
                         </select>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                        <div>
+                            <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Start Date</label>
+                            <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md p-2 mt-1 text-slate-900 dark:text-white focus:ring-primary focus:border-primary"/>
+                        </div>
+                        <div>
+                            <label className="text-sm font-medium text-slate-600 dark:text-slate-400">End Date</label>
+                            <input type="date" value={endDate} min={startDate} onChange={e => setEndDate(e.target.value)} className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md p-2 mt-1 text-slate-900 dark:text-white focus:ring-primary focus:border-primary"/>
+                        </div>
                     </div>
                     <div>
                         <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Status</label>

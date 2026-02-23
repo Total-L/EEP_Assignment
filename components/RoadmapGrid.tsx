@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Pillar, RoadmapItem } from '../types';
+import { Pillar, RoadmapItem, PositionedItem } from '../types';
 import PillarCard from './PillarCard';
 import RoadmapItemCard from './RoadmapItemCard';
 
@@ -13,35 +13,69 @@ interface RoadmapGridProps {
     onDrop: (e: React.DragEvent, dateIndex: number, columnIndex: number) => void;
 }
 
+const ROW_HEIGHT = 120;
+const ROW_GAP = 8;
+
+function computePositionedItems(items: RoadmapItem[], totalRows: number): PositionedItem[] {
+    const sorted = [...items].sort((a, b) => a.dateIndex - b.dateIndex);
+    const tracks: RoadmapItem[][] = [];
+
+    for (const item of sorted) {
+        let placed = false;
+        for (const track of tracks) {
+            const last = track[track.length - 1];
+            const lastEnd = Math.min(last.endDateIndex, totalRows - 1);
+            if (lastEnd < item.dateIndex) {
+                track.push(item);
+                placed = true;
+                break;
+            }
+        }
+        if (!placed) tracks.push([item]);
+    }
+
+    const totalTracks = Math.max(tracks.length, 1);
+    return tracks.flatMap((track, trackIndex) =>
+        track.map(item => {
+            const clampedEnd = Math.min(item.endDateIndex, totalRows - 1);
+            return {
+                ...item,
+                top: item.dateIndex * ROW_HEIGHT + ROW_GAP / 2,
+                height: (clampedEnd - item.dateIndex + 1) * ROW_HEIGHT - ROW_GAP,
+                left: trackIndex / totalTracks,
+                width: 1 / totalTracks,
+            };
+        })
+    );
+}
+
 const RoadmapGrid: React.FC<RoadmapGridProps> = ({ pillars, dates, items, onContextMenu, onDragStart, onDrop }) => {
-    
+
     const handleDragOver = (e: React.DragEvent) => {
         e.preventDefault();
     };
 
     return (
         <div className="flex gap-x-0">
-            {/* Date Timeline Column - adjusted for screenshot style */}
+            {/* Date Timeline Column */}
             <div className="w-[120px] flex-shrink-0">
                 <div className="h-[140px] mb-6 flex items-center justify-center font-bold text-slate-400 dark:text-slate-500 text-xs uppercase tracking-widest print-hidden">Date</div>
                 <div className="relative">
                     <div className="absolute top-0 bottom-0 left-[85%] -translate-x-1/2 w-px border-l border-dashed border-slate-300 dark:border-slate-800"></div>
-                    {dates.map((date, dateIndex) => {
-                        return (
-                            <div key={dateIndex} className="h-[120px] flex items-center relative">
-                                <div className="absolute left-[85%] -translate-x-1/2 w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-700 z-10"></div>
-                                <div className="w-full pr-6 flex items-center justify-end">
-                                    <span className="text-[11px] font-bold text-slate-400 dark:text-slate-600 text-right whitespace-nowrap uppercase tracking-tighter">
-                                        {date}
-                                    </span>
-                                </div>
+                    {dates.map((date, dateIndex) => (
+                        <div key={dateIndex} className="h-[120px] flex items-center relative">
+                            <div className="absolute left-[85%] -translate-x-1/2 w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-700 z-10"></div>
+                            <div className="w-full pr-6 flex items-center justify-end">
+                                <span className="text-[11px] font-bold text-slate-400 dark:text-slate-600 text-right whitespace-nowrap uppercase tracking-tighter">
+                                    {date}
+                                </span>
                             </div>
-                        );
-                    })}
+                        </div>
+                    ))}
                 </div>
             </div>
 
-             {/* Pillars and Items Grid */}
+            {/* Pillars and Items Grid */}
             <div className="flex-1">
                 {/* Pillar Headers */}
                 <div className="grid grid-cols-4 gap-x-4 mb-6">
@@ -49,32 +83,56 @@ const RoadmapGrid: React.FC<RoadmapGridProps> = ({ pillars, dates, items, onCont
                         <PillarCard key={pillar.id} pillar={pillar} />
                     ))}
                 </div>
-                {/* Items Grid with optimized internal borders */}
-                <div className="border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
+
+                {/* Grid with overlay */}
+                <div className="relative border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
+                    {/* Background grid — drop targets and borders only */}
                     <div className="grid grid-cols-4 bg-transparent">
                         {dates.map((_, dateIndex) => (
                             <React.Fragment key={dateIndex}>
-                                {pillars.map((pillar, columnIndex) => {
-                                    const cellItems = items.filter(item => item.dateIndex === dateIndex && item.columnIndex === columnIndex);
-                                    return (
-                                        <div
-                                            key={`${dateIndex}-${columnIndex}`}
-                                            className={`p-3 h-[120px] relative ${columnIndex < pillars.length - 1 ? 'border-r' : ''} ${dateIndex < dates.length - 1 ? 'border-b' : ''} border-slate-200 dark:border-slate-800/60 border-dashed`}
-                                            onContextMenu={(e) => onContextMenu(e, 'cell', { dateIndex, columnIndex })}
-                                            onDragOver={handleDragOver}
-                                            onDrop={(e) => onDrop(e, dateIndex, columnIndex)}
-                                        >
-                                            {/* Scrollable container for items in cell with optimized scrollbar */}
-                                            <div className="flex flex-col gap-2 h-full overflow-y-auto pr-1">
-                                                {cellItems.map(item => (
-                                                    <RoadmapItemCard key={item.id} item={item} onDragStart={onDragStart} onContextMenu={onContextMenu} pillarColor={pillar.color} />
-                                                ))}
-                                            </div>
-                                        </div>
-                                    );
-                                })}
+                                {pillars.map((_, columnIndex) => (
+                                    <div
+                                        key={`${dateIndex}-${columnIndex}`}
+                                        className={`h-[120px] relative ${columnIndex < pillars.length - 1 ? 'border-r' : ''} ${dateIndex < dates.length - 1 ? 'border-b' : ''} border-slate-200 dark:border-slate-800/60 border-dashed`}
+                                        onContextMenu={(e) => onContextMenu(e, 'cell', { dateIndex, columnIndex })}
+                                        onDragOver={handleDragOver}
+                                        onDrop={(e) => onDrop(e, dateIndex, columnIndex)}
+                                    />
+                                ))}
                             </React.Fragment>
                         ))}
+                    </div>
+
+                    {/* Overlay layer — absolutely positioned items per pillar column */}
+                    <div className="absolute inset-0 pointer-events-none grid grid-cols-4">
+                        {pillars.map((pillar, columnIndex) => {
+                            const columnItems = items.filter(i => i.columnIndex === columnIndex);
+                            const positioned = computePositionedItems(columnItems, dates.length);
+                            return (
+                                <div key={columnIndex} className="relative">
+                                    {positioned.map(item => (
+                                        <div
+                                            key={item.id}
+                                            className="absolute pointer-events-auto"
+                                            style={{
+                                                top: item.top,
+                                                height: item.height,
+                                                left: `calc(${item.left * 100}% + 6px)`,
+                                                width: `calc(${item.width * 100}% - 12px)`,
+                                            }}
+                                        >
+                                            <RoadmapItemCard
+                                                item={item}
+                                                onDragStart={onDragStart}
+                                                onContextMenu={onContextMenu}
+                                                pillarColor={pillar.color}
+                                                isSpanning={item.endDateIndex > item.dateIndex}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
             </div>
