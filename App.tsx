@@ -6,7 +6,7 @@ import Header from './components/Header';
 import RoadmapGrid from './components/RoadmapGrid';
 import ContextMenu from './components/ContextMenu';
 import ItemModal from './components/ItemModal';
-import { RoadmapItem, ContextMenuState, ModalState, Project } from './types';
+import { RoadmapItem, ContextMenuState, ModalState, Project, Status } from './types';
 import { PILLARS, DATES_WEEK, DATES_MONTH, DATES_QUARTER, INITIAL_ITEMS, USERS, PROJECTS } from './constants';
 
 const App: React.FC = () => {
@@ -16,6 +16,27 @@ const App: React.FC = () => {
     const [viewMode, setViewMode] = useState<'week' | 'month' | 'quarter'>('week');
     const [isDarkMode, setIsDarkMode] = useState(true);
     const [selectedProject, setSelectedProject] = useState<Project>(PROJECTS[0]);
+    
+    // Auto-update expired items to Delayed status on component mount
+    useEffect(() => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        setItems(prevItems =>
+            prevItems.map(item => {
+                if (item.status === Status.Done) return item;
+                
+                const endDate = new Date(item.endDate);
+                endDate.setHours(0, 0, 0, 0);
+                
+                if (endDate < today) {
+                    return { ...item, status: Status.Delayed };
+                }
+                
+                return item;
+            })
+        );
+    }, []); // Run once on mount
     
     const closeContextMenu = useCallback(() => {
         setContextMenu(prev => ({ ...prev, visible: false }));
@@ -45,9 +66,9 @@ const App: React.FC = () => {
 
     const dateIndexToAbsoluteDate = useCallback((idx: number, mode: string): string => {
         if (mode === 'week') {
-            // Base date: 2026-02-23 (Monday) is week 0
+            // Base date: 2026-02-16 (Monday) is week 0
             // idx can be a float: 0.0 = Monday, 1.0 = following Monday, etc.
-            const baseDate = new Date('2026-02-23');
+            const baseDate = new Date('2026-02-16');
             const daysToAdd = idx * 7;
             baseDate.setDate(baseDate.getDate() + Math.floor(daysToAdd));
             return baseDate.toISOString().split('T')[0];
@@ -225,16 +246,33 @@ const App: React.FC = () => {
         }
     };
 
+    const getEffectiveStatus = (item: RoadmapItem): Status => {
+        // Auto-detect delayed status: if end date has passed and status is not Done, mark as Delayed
+        if (item.status === Status.Done) return Status.Done;
+        
+        const endDate = new Date(item.endDate);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        endDate.setHours(0, 0, 0, 0);
+        
+        if (endDate < today) {
+            return Status.Delayed;
+        }
+        
+        return item.status;
+    };
+
     const contextMenuItems = () => {
         if (contextMenu.type === 'cell') {
             return [{ label: 'Add New Item', action: () => handleAddItem(contextMenu.data as any) }];
         }
         if (contextMenu.type === 'item') {
             const item = (contextMenu.data as {item: RoadmapItem}).item;
+            const effectiveStatus = getEffectiveStatus(item);
             
             // Cycle through statuses: Todo → InProgress → Done → Delayed → Todo
             const statusCycle = [Status.Todo, Status.InProgress, Status.Done, Status.Delayed];
-            const currentStatusIndex = statusCycle.indexOf(item.status);
+            const currentStatusIndex = statusCycle.indexOf(effectiveStatus);
             const nextStatus = statusCycle[(currentStatusIndex + 1) % statusCycle.length];
             
             return [
@@ -293,13 +331,16 @@ const App: React.FC = () => {
                     <span className="text-[10px] font-bold text-slate-500 dark:text-slate-500 uppercase tracking-widest px-1">Roadmap Status</span>
                     <div className="flex items-center justify-between px-1">
                         <div className="flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-pillar-emerald"></span><span className="text-[11px] font-bold text-slate-700 dark:text-slate-300">In Progress</span>
+                            <span className="w-2 h-2 rounded-full bg-blue-500"></span><span className="text-[11px] font-bold text-slate-700 dark:text-slate-300">In Progress</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-slate-500"></span><span className="text-[11px] font-bold text-slate-700 dark:text-slate-300">Todo</span>
+                            <span className="w-2 h-2 rounded-full bg-yellow-500"></span><span className="text-[11px] font-bold text-slate-700 dark:text-slate-300">Todo</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-blue-500"></span><span className="text-[11px] font-bold text-slate-700 dark:text-slate-300">Delayed</span>
+                            <span className="w-2 h-2 rounded-full bg-green-500"></span><span className="text-[11px] font-bold text-slate-700 dark:text-slate-300">Done</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-red-500"></span><span className="text-[11px] font-bold text-slate-700 dark:text-slate-300">Delayed</span>
                         </div>
                     </div>
                 </div>
