@@ -23,7 +23,8 @@ function computePositionedItems(items: RoadmapItem[], totalRows: number): Positi
     // Helper function to calculate item's visual bounds for collision detection
     const getItemBounds = (item: RoadmapItem) => {
         const top = item.dateIndex * ROW_HEIGHT + ROW_GAP / 2;
-        const height = Math.max((item.endDateIndex - item.dateIndex) * ROW_HEIGHT - ROW_GAP, MIN_ITEM_HEIGHT);
+        // Add +1 to include both start and end week
+        const height = Math.max((item.endDateIndex - item.dateIndex + 1) * ROW_HEIGHT - ROW_GAP, MIN_ITEM_HEIGHT);
         const bottom = top + height;
         return { top, bottom, height };
     };

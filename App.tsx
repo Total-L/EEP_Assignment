@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -176,8 +175,8 @@ const App: React.FC = () => {
             case 'week':
             default: {
                 // Support day-level precision: dateIndex can be float
-                // Base: 2026-02-23 is week 0
-                const baseDate = new Date('2026-02-23');
+                // Base: 2026-02-16 is week 0 (should match DATES_WEEK)
+                const baseDate = new Date('2026-02-16');
                 const diffMs = date.getTime() - baseDate.getTime();
                 const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
                 const weekIndex = diffDays / 7;
